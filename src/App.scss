@@ -1,3 +1,10 @@
+$base-color:#c6538c;
+
+.test {
+ color: $base-color
+}
+
+
 .App {
   text-align: center;
 }
@@ -25,7 +32,7 @@
 }
 
 .App-link {
-  color: #61dafb;
+  color: greenyellow
 }
 
 @keyframes App-logo-spin {
@@ -36,3 +43,5 @@
     transform: rotate(360deg);
   }
 }
+
+
