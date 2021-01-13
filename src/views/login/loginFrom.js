@@ -13,6 +13,7 @@ class LoginFrom extends Component{
         this.state = {}
     }
     onFinish = (value) => {
+        console.log('onFinish-login'+value)
     };
 
     registerCounter = ()=>{
@@ -33,7 +34,7 @@ class LoginFrom extends Component{
                             initialValues={{
                                 remember: true,
                             }}
-                            onFinish={()=>this.onFinish}
+                            onFinish={this.onFinish}
                         >
 
                             <Form.Item

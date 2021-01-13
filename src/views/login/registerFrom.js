@@ -11,6 +11,7 @@ class RegisterFrom extends Component{
         this.state = {}
     }
     onFinish = (value) => {
+        console.log('onFinish-register'+value)
     };
 
     logIn=()=>{
@@ -30,7 +31,7 @@ class RegisterFrom extends Component{
                         initialValues={{
                             remember: true,
                         }}
-                        onFinish={()=>this.onFinish}
+                        onFinish={this.onFinish}
                     >
                         <Form.Item
                             name="username"
