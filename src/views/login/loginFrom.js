@@ -7,12 +7,21 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
 import {validate_password} from '../../utils/validate'
 
+// api
+import { Login } from '../../api/account'
+
+
 class LoginFrom extends Component{
     constructor(props) {
         super(props);
         this.state = {}
     }
     onFinish = (value) => {
+        Login().then(response=>{
+            console.log(response)
+        }).catch(error=>{
+            console.log(error)
+        });
         console.log('onFinish-login'+value)
     };
 
