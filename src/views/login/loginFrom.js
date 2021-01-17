@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from 'react';
 import './index.scss'
-import { Form, Input, Button, Row, Col, } from 'antd';
+import { Form, Input, Button, Row, Col, message} from 'antd';
 
 // 这里是icon组件，用法可以搜索看代码
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
@@ -8,13 +8,15 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import {validate_password} from '../../utils/validate'
 
 // api
-import { Login } from '../../api/account'
+import { Login, GetCode } from '../../api/account'
 
 
 class LoginFrom extends Component{
     constructor(props) {
         super(props);
-        this.state = {}
+        this.state = {
+            username:''
+        }
     }
     onFinish = (value) => {
         Login().then(response=>{
@@ -25,6 +27,31 @@ class LoginFrom extends Component{
         console.log('onFinish-login'+value)
     };
 
+    // 获取input内容
+    inputChange = (e)=>{
+        this.setState({
+            username:e.target.value
+        })
+    };
+
+    //获取验证码
+    getCode = ()=>{
+        //如果没有用户名则拦截点击获取验证码按钮
+        if(!this.state.username){
+            message.warning('用户名不能为空')
+        }
+        const requestDate = {
+            username:this.state.username,
+            module:'login'
+        };
+        GetCode(requestDate).then(response=>{
+            console.log(response)
+        }).catch(error=>{
+            console.log(error)
+        });
+    };
+
+    //切换注册页面
     registerCounter = ()=>{
         this.props.registerCounter('register')
     };
@@ -58,7 +85,7 @@ class LoginFrom extends Component{
                                     }
                                 ]}
                             >
-                                <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="email/phone" />
+                                <Input onChange={this.inputChange} value={this.state.username} prefix={<UserOutlined className="site-form-item-icon" />} placeholder="email/phone" type='email'/>
                             </Form.Item>
 
                             <Form.Item
@@ -106,7 +133,7 @@ class LoginFrom extends Component{
                                         },
                                         }),
                                         ]}>
-                                <Row gutter={13}>
+                                <Row gutter={15}>
                                     <Col span={15}>
                                         <Input
                                             prefix={<LockOutlined className="site-form-item-icon"/>}
@@ -114,7 +141,7 @@ class LoginFrom extends Component{
                                         />
                                     </Col>
                                     <Col span={9} >
-                                        <Button type="primary" danger>获取验证码</Button>
+                                        <Button  onClick={this.getCode} type="primary" danger>获取验证码</Button>
                                     </Col>
                                 </Row>
                             </Form.Item>

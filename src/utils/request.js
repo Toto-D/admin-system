@@ -3,7 +3,8 @@ import axios from "axios";
 // 创建实例对象
 const service = axios.create(
     {
-        baseURL:process.env.REACT_APP_LOGIN_API,
+        baseURL:process.env.REACT_APP_API,
+        // baseURL:'/devApi',
         timeout:5000,
         // headers:{'X-Custom-Header':'foobar'}
     }
