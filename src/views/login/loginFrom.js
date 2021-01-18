@@ -5,7 +5,7 @@ import { Form, Input, Button, Row, Col, message} from 'antd';
 // 这里是icon组件，用法可以搜索看代码
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
-import {validate_email,validate_emails} from '../../utils/validate'
+import {validate_emails} from '../../utils/validate'
 
 // api
 import { Login, GetCode } from '../../api/account'
@@ -16,6 +16,9 @@ class LoginFrom extends Component{
         super(props);
         this.state = {
             username:'',
+            // code_button_disabled:true,
+            code_button_loading:false,
+            code_button_text:'获取验证码',
             code_button_disabled:true
         }
     }
@@ -35,22 +38,61 @@ class LoginFrom extends Component{
         })
     };
 
+    //验证码倒计时
+    countDown = () => {
+        let timer = null;
+        let sec = 60;
+        this.setState({
+            code_button_loading:false,
+            code_button_disabled:true,
+            code_button_text:`${sec}S`
+
+        });
+        timer = setInterval(()=>{
+            sec--;
+
+            if(sec===0){
+                this.setState({
+                    code_button_text:'重新获取',
+                    code_button_disabled:false
+                });
+                //清除定时器
+                clearInterval(timer);
+                return false
+            }
+            //setState 更新将局部重新渲染dom
+            this.setState({
+                code_button_text:`${sec}S`
+            })
+        },1000)
+    };
+
     //获取验证码
     getCode = ()=>{
         //如果没有用户名则拦截点击获取验证码按钮
         if(!this.state.username){
-            message.warning('用户名不能为空')
+            message.warning('用户名不能为空');
+            return false
         }
+        this.setState({
+            code_button_loading:true,
+            code_button_text:'发送中'
+        });
         const requestDate = {
             username:this.state.username,
             module:'login'
         };
         GetCode(requestDate).then(response=>{
-            console.log(response)
+            //执行倒计时
+            this.countDown();
         }).catch(error=>{
-            console.log(error)
+            this.setState({
+                code_button_loading:false,
+                code_button_text:'重新获取'
+            })
         });
     };
+
 
     //切换注册页面
     registerCounter = ()=>{
@@ -58,6 +100,7 @@ class LoginFrom extends Component{
     };
 
     render() {
+        const {code_button_loading,code_button_text,code_button_disabled} = this.state;
         const _this = this;
         return (
                 <Fragment>
@@ -162,7 +205,8 @@ class LoginFrom extends Component{
                                         />
                                     </Col>
                                     <Col span={9} >
-                                        <Button  onClick={this.getCode} type="primary" danger block disabled={this.state.code_button_disabled}>获取验证码</Button>
+                                        <Button   disabled={code_button_disabled} onClick={this.getCode} type="primary" danger block loading={code_button_loading}>{code_button_text}</Button>
+                                        {/*<Button  type="primary" danger block disabled={this.state.code_button_disabled}>获取验证码</Button>*/}
                                     </Col>
                                 </Row>
                             </Form.Item>
