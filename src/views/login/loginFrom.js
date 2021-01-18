@@ -5,7 +5,7 @@ import { Form, Input, Button, Row, Col, message} from 'antd';
 // 这里是icon组件，用法可以搜索看代码
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
-import {validate_password} from '../../utils/validate'
+import {validate_email,validate_emails} from '../../utils/validate'
 
 // api
 import { Login, GetCode } from '../../api/account'
@@ -15,7 +15,8 @@ class LoginFrom extends Component{
     constructor(props) {
         super(props);
         this.state = {
-            username:''
+            username:'',
+            code_button_disabled:true
         }
     }
     onFinish = (value) => {
@@ -57,6 +58,7 @@ class LoginFrom extends Component{
     };
 
     render() {
+        const _this = this;
         return (
                 <Fragment>
                     <div className='from-header'>
@@ -80,9 +82,28 @@ class LoginFrom extends Component{
                                         required: true,
                                         message: '请输入用户名',
                                     },
-                                    {
-                                        pattern:validate_password, message:'用户名错误'
-                                    }
+                                    //使用antd的组件内置验证用户名
+                                    // { type :'email',message:'邮箱格式不正确' },
+
+                                    //使用自定义的正则验证用户名
+                                    // {
+                                    //     pattern:validate_email, message:'用户名错误'
+                                    // },
+
+                                    //使用自定义方式进行用户名验证
+                                    ({ getFieldValue }) => ({//es6解构语法，将getFieldValue对象全部拆解到花括号中
+                                        validator(_, value) {
+                                            if (validate_emails(value)) {
+                                                _this.setState({
+                                                    code_button_disabled:false
+                                                });
+                                                return Promise.resolve();
+                                            } else{
+                                                _this.setState({
+                                                    code_button_disabled : true
+                                                });
+                                                return Promise.reject('邮箱格式不正确ya');}
+                                            }}),
                                 ]}
                             >
                                 <Input onChange={this.inputChange} value={this.state.username} prefix={<UserOutlined className="site-form-item-icon" />} placeholder="email/phone" type='email'/>
@@ -141,7 +162,7 @@ class LoginFrom extends Component{
                                         />
                                     </Col>
                                     <Col span={9} >
-                                        <Button  onClick={this.getCode} type="primary" danger>获取验证码</Button>
+                                        <Button  onClick={this.getCode} type="primary" danger block disabled={this.state.code_button_disabled}>获取验证码</Button>
                                     </Col>
                                 </Row>
                             </Form.Item>
