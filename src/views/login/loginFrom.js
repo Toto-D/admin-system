@@ -10,6 +10,9 @@ import {validate_emails} from '../../utils/validate'
 // api
 import { Login, GetCode } from '../../api/account'
 
+//getcode
+import Code from '../../components/code/index'
+
 
 class LoginFrom extends Component{
     constructor(props) {
@@ -100,7 +103,6 @@ class LoginFrom extends Component{
     };
 
     render() {
-        const {code_button_loading,code_button_text,code_button_disabled} = this.state;
         const _this = this;
         return (
                 <Fragment>
@@ -205,8 +207,8 @@ class LoginFrom extends Component{
                                         />
                                     </Col>
                                     <Col span={9} >
-                                        <Button   disabled={code_button_disabled} onClick={this.getCode} type="primary" danger block loading={code_button_loading}>{code_button_text}</Button>
-                                        {/*<Button  type="primary" danger block disabled={this.state.code_button_disabled}>获取验证码</Button>*/}
+                                        <Code username={this.state.username} />
+                                        {/*<Button disabled={this.state.code_button_disabled} onClick={this.getCode} type="primary" danger block loading={this.state.code_button_loading}>{this.state.code_button_text}</Button>*/}
                                     </Col>
                                 </Row>
                             </Form.Item>

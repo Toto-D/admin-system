@@ -4,11 +4,15 @@ import { Form, Input, Button, Row, Col, } from 'antd';
 
 // 这里是icon组件，用法可以搜索看代码
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+//getcode
+import Code from '../../components/code/index'
 
 class RegisterFrom extends Component{
     constructor(props) {
         super(props);
-        this.state = {}
+        this.state = {
+            username:''
+        }
     }
     onFinish = (value) => {
         console.log('onFinish-register'+value)
@@ -89,7 +93,8 @@ class RegisterFrom extends Component{
                                     />
                                 </Col>
                                 <Col span={9} >
-                                    <Button type="primary" danger>获取验证码</Button>
+                                    <Code username={this.state.username}/>
+                                    {/*<Button type="primary" danger>获取验证码</Button>*/}
                                 </Col>
                             </Row>
                         </Form.Item>
