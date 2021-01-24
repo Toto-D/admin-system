@@ -8,7 +8,7 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import {validate_emails} from '../../utils/validate'
 
 // api
-import { Login, GetCode } from '../../api/account'
+import { Login } from '../../api/account'
 
 //getcode
 import Code from '../../components/code/index'
@@ -19,6 +19,8 @@ class LoginFrom extends Component{
         super(props);
         this.state = {
             username:'',
+            password:'',
+            code:'',
             // code_button_disabled:true,
             code_button_loading:false,
             code_button_text:'获取验证码',
@@ -26,75 +28,38 @@ class LoginFrom extends Component{
         }
     }
     onFinish = (value) => {
-        Login().then(response=>{
+        const requestDate = {
+            username:this.state.username,
+            password:this.state.password,
+            code:this.state.code
+        };
+        Login(requestDate).then(response=>{
+            message.success(response.data.message);
             console.log(response)
         }).catch(error=>{
             console.log(error)
         });
-        console.log('onFinish-login'+value)
     };
 
     // 获取input内容
-    inputChange = (e)=>{
+    inputChangeUsername = (e)=>{
         this.setState({
             username:e.target.value
         })
     };
 
-    //验证码倒计时
-    countDown = () => {
-        let timer = null;
-        let sec = 60;
+    inputChangePassword = (e)=>{
         this.setState({
-            code_button_loading:false,
-            code_button_disabled:true,
-            code_button_text:`${sec}S`
-
-        });
-        timer = setInterval(()=>{
-            sec--;
-
-            if(sec===0){
-                this.setState({
-                    code_button_text:'重新获取',
-                    code_button_disabled:false
-                });
-                //清除定时器
-                clearInterval(timer);
-                return false
-            }
-            //setState 更新将局部重新渲染dom
-            this.setState({
-                code_button_text:`${sec}S`
-            })
-        },1000)
+            password:e.target.value
+        })
     };
 
-    //获取验证码
-    getCode = ()=>{
-        //如果没有用户名则拦截点击获取验证码按钮
-        if(!this.state.username){
-            message.warning('用户名不能为空');
-            return false
-        }
+    inputChangeCode = (e)=>{
         this.setState({
-            code_button_loading:true,
-            code_button_text:'发送中'
-        });
-        const requestDate = {
-            username:this.state.username,
-            module:'login'
-        };
-        GetCode(requestDate).then(response=>{
-            //执行倒计时
-            this.countDown();
-        }).catch(error=>{
-            this.setState({
-                code_button_loading:false,
-                code_button_text:'重新获取'
-            })
-        });
+            code:e.target.value
+        })
     };
+
 
 
     //切换注册页面
@@ -151,7 +116,7 @@ class LoginFrom extends Component{
                                             }}),
                                 ]}
                             >
-                                <Input onChange={this.inputChange} value={this.state.username} prefix={<UserOutlined className="site-form-item-icon" />} placeholder="email/phone" type='email'/>
+                                <Input onChange={this.inputChangeUsername} value={this.state.username} prefix={<UserOutlined className="site-form-item-icon" />} placeholder="email/phone" type='email'/>
                             </Form.Item>
 
                             <Form.Item
@@ -162,18 +127,16 @@ class LoginFrom extends Component{
                                         message: '请输入密码!',
                                     },
                                     {
-                                        min:8,
-                                        message:'长度最小8位'},
-                                    {
-                                        max:24,
-                                        message:'长度最大24位'
-                                    }
+                                        min:6,
+                                        message:'长度最小6位'},
+
                                 ]}>
 
                                 <Input
                                     prefix={<LockOutlined className="site-form-item-icon" />}
                                     type="password"
                                     placeholder="Password"
+                                    onChange={this.inputChangePassword}
                                 />
                             </Form.Item>
 
@@ -192,7 +155,7 @@ class LoginFrom extends Component{
                                             if (value.length===6) {
                                             return Promise.resolve();
                                         }else{
-                                                return Promise.reject('The two passwords that you entered do not match!');
+                                                return Promise.reject('验证码长度不正确');
                                             }
 
 
@@ -204,10 +167,11 @@ class LoginFrom extends Component{
                                         <Input
                                             prefix={<LockOutlined className="site-form-item-icon"/>}
                                             placeholder="Code"
+                                            onChange={this.inputChangeCode}
                                         />
                                     </Col>
                                     <Col span={9} >
-                                        <Code username={this.state.username} />
+                                        <Code username={this.state.username}  module={'login'}/>
                                         {/*<Button disabled={this.state.code_button_disabled} onClick={this.getCode} type="primary" danger block loading={this.state.code_button_loading}>{this.state.code_button_text}</Button>*/}
                                     </Col>
                                 </Row>
